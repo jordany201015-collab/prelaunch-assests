@@ -1,104 +1,136 @@
+import { useMemo, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { CSSProperties, useMemo, useState } from 'react';
-import { api } from '../lib/tauri';
+import { logout } from '../lib/tauri';
 
-const mockInstances = ['alpha', 'beta', 'gamma'];
+const circleButtonStyle: React.CSSProperties = {
+  width: 44,
+  height: 44,
+  borderRadius: 999,
+  border: '1px solid rgba(255,255,255,0.08)',
+  background: 'rgba(255,255,255,0.06)',
+  color: 'white',
+  cursor: 'pointer',
+  display: 'grid',
+  placeItems: 'center'
+};
 
-export function SidebarLayout() {
-  const [menuOpen, setMenuOpen] = useState(false);
+const dropdownItemStyle: React.CSSProperties = {
+  width: '100%',
+  textAlign: 'left',
+  padding: '10px 12px',
+  background: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: 14
+};
+
+const glassMainStyle: React.CSSProperties = {
+  flex: 1,
+  padding: 24,
+  background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.06)',
+  borderRadius: 18,
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  margin: 16,
+  color: '#e5e7eb'
+};
+
+export default function SidebarLayout() {
   const navigate = useNavigate();
-  const initials = useMemo(() => 'MC', []);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = async () => {
-    await api.logout();
-    navigate('/login');
-  };
+  // Mock (por ahora)
+  const mockInstances = useMemo(() => ['alpha', 'beta', 'gamma'], []);
+  const initials = 'MC';
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } finally {
+      setMenuOpen(false);
+      navigate('/login');
+    }
+  }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside
-        style={{
-          width: 88,
-          background: '#1f2937',
-          color: '#fff',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px 8px'
-        }}
-      >
-        <button onClick={() => navigate('/instances')} style={circleButtonStyle} title="Home">
-          🏠
-        </button>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {mockInstances.map((id) => (
-            <button
-              key={id}
-              onClick={() => navigate(`/instance/${id}`)}
-              title={id}
-              style={{ ...circleButtonStyle, background: '#374151' }}
-            >
-              {id.charAt(0).toUpperCase()}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ position: 'relative' }}>
-          <button onClick={() => setMenuOpen((v) => !v)} style={{ ...circleButtonStyle, background: '#4b5563' }}>
-            {initials}
+    <div className="neon-bg instances">
+      <div className="neon-noise" />
+      <div className="neon-content" style={{ display: 'flex', minHeight: '100vh' }}>
+        <aside
+          style={{
+            width: 88,
+            background: 'rgba(15, 23, 42, 0.55)',
+            color: '#fff',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '16px 8px',
+            borderRight: '1px solid rgba(255,255,255,0.06)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)'
+          }}
+        >
+          <button onClick={() => navigate('/instances')} style={circleButtonStyle} title="Home">
+            🏠
           </button>
-          {menuOpen && (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 52,
-                right: 0,
-                background: '#fff',
-                color: '#111827',
-                borderRadius: 8,
-                boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                minWidth: 140,
-                overflow: 'hidden'
-              }}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {mockInstances.map((id) => (
+              <button
+                key={id}
+                onClick={() => navigate(`/instance/${id}`)}
+                title={id}
+                style={{ ...circleButtonStyle, background: 'rgba(255,255,255,0.06)' }}
+              >
+                {id.charAt(0).toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              style={{ ...circleButtonStyle, background: 'rgba(255,255,255,0.08)' }}
+              title="Cuenta"
             >
-              <button style={dropdownItemStyle} onClick={() => navigate('/settings')}>
-                Opciones
-              </button>
-              <button style={dropdownItemStyle} onClick={handleLogout}>
-                Cerrar sesión
-              </button>
-            </div>
-          )}
-        </div>
-      </aside>
-      <main style={{ flex: 1, padding: 24, background: '#f3f4f6' }}>
-        <Outlet />
-      </main>
+              {initials}
+            </button>
+
+            {menuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 52,
+                  right: 0,
+                  background: 'rgba(17, 24, 39, 0.95)',
+                  color: '#f9fafb',
+                  borderRadius: 10,
+                  border: '1px solid rgba(255,255,255,0.10)',
+                  boxShadow: '0 12px 35px rgba(0,0,0,0.45)',
+                  minWidth: 160,
+                  overflow: 'hidden',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)'
+                }}
+              >
+                <button style={dropdownItemStyle} onClick={() => (setMenuOpen(false), navigate('/settings'))}>
+                  Opciones
+                </button>
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                <button style={dropdownItemStyle} onClick={handleLogout}>
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
+          </div>
+        </aside>
+
+        <main style={glassMainStyle}>
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
-
-const circleButtonStyle: CSSProperties = {
-  width: 44,
-  height: 44,
-  borderRadius: '50%',
-  border: 'none',
-  cursor: 'pointer',
-  color: 'white',
-  background: '#111827',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: 600
-};
-
-const dropdownItemStyle: CSSProperties = {
-  width: '100%',
-  border: 'none',
-  background: 'transparent',
-  textAlign: 'left',
-  padding: '10px 12px',
-  cursor: 'pointer'
-};
