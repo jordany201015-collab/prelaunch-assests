@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/instance.schema.json",
+  "title": "Minecraft Launcher Instance",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "visibility",
+    "minecraftVersion",
+    "loader",
+    "ram"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]{3,50}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["public", "private", "whitelist"]
+    },
+    "minecraftVersion": {
+      "type": "string"
+    },
+    "loader": {
+      "type": "string",
+      "enum": ["vanilla", "fabric", "forge", "neoforge", "quilt"]
+    },
+    "ram": {
+      "type": "object",
+      "required": ["minMb", "maxMb"],
+      "properties": {
+        "minMb": {
+          "type": "integer",
+          "minimum": 512
+        },
+        "maxMb": {
+          "type": "integer",
+          "minimum": 1024
+        }
+      }
+    },
+    "javaArgs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "whitelist": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "UUIDs de cuentas Minecraft permitidas"
+      }
+    },
+    "modpack": {
+      "type": "object",
+      "properties": {
+        "manifestUrl": { "type": "string", "format": "uri" },
+        "signature": { "type": "string" }
+      },
+      "required": ["manifestUrl"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "visibility": { "const": "whitelist" }
+        }
+      },
+      "then": {
+        "required": ["whitelist"],
+        "properties": {
+          "whitelist": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "ram": {
+            "properties": {
+              "minMb": { "type": "integer" },
+              "maxMb": { "type": "integer" }
+            },
+            "required": ["minMb", "maxMb"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "ram": {
+            "properties": {
+              "maxMb": {
+                "minimum": 1024
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

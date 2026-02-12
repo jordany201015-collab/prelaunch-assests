@@ -1,0 +1,22 @@
+{
+  "id": "survival-main",
+  "name": "Survival Main",
+  "visibility": "whitelist",
+  "minecraftVersion": "1.20.1",
+  "loader": "fabric",
+  "ram": {
+    "minMb": 2048,
+    "maxMb": 6144
+  },
+  "javaArgs": [
+    "-XX:+UseG1GC",
+    "-XX:MaxGCPauseMillis=50"
+  ],
+  "whitelist": [
+    "8667ba71-b85a-4004-af54-457a9734eed7"
+  ],
+  "modpack": {
+    "manifestUrl": "https://example.com/modpacks/survival-main/manifest.json",
+    "signature": "ed25519:REPLACE_ME"
+  }
+}
